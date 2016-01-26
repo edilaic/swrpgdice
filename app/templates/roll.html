@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>Star Wars Dice Roller Page</title>
+    </head>
+    <body>
+        {% if result %}
+        <p> Your roll was: {{ result }} </p>
+        <p>
+            {% for r in result %}
+                <img src='/static/swdice/{{ r }}.png'/>
+            {% endfor %}
+        </p>
+        {% endif %}
+        <h3>Choose your dice:</h3>
+        <form action="" method="post" name="roll">
+            {{ form.hidden_tag() }}
+            <ul>
+                <li> Boost: {{ form.boost }} </li>
+                <li> Ability: {{ form.ability }} </li>
+                <li> Proficiency: {{ form.prof }} </li>
+                <li> Setback: {{ form.setback }} </li>
+                <li> Difficulty: {{ form.difficulty }} </li>
+                <li> Challenge: {{ form.challenge }} </li>
+                <li> Force: {{ form.force }} </li>
+                <li> Percentile: {{ form.percentile }} </li>
+            </ul>
+            <input type="submit" value="Roll Dice!"/>
+        </form>
+    </body>
+</html>
