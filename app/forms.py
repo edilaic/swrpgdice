@@ -1,8 +1,9 @@
 from flask.ext.wtf import Form
 from wtforms.validators import Optional
-from wtforms import IntegerField
+from wtforms import IntegerField, TextField
 
 class RollForm(Form):
+    player = TextField('player')
     boost = IntegerField('boost', validators=[ Optional() ])
     ability = IntegerField('ability', validators=[ Optional() ])
     prof = IntegerField('prof', validators=[ Optional() ])

@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Star Wars Dice Roller Page</title>
+        <meta name="viewport" content="width=device-width">
     </head>
     <body>
         {% if result %}
@@ -15,6 +16,7 @@
         <form action="" method="post" name="roll">
             {{ form.hidden_tag() }}
             <ul>
+                <li> Player: {{ form.player }} </li>
                 <li> Boost: {{ form.boost }} </li>
                 <li> Ability: {{ form.ability }} </li>
                 <li> Proficiency: {{ form.prof }} </li>
