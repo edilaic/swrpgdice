@@ -1,7 +1,14 @@
 <html>
     <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <title>Star Wars Dice Roller Monitor</title>
-        <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+		<!-- CSS files -->
+		<link href="/static/css/style.css" rel="stylesheet">
+		<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Javascript -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
         $(document).ready(function(){
@@ -16,13 +23,13 @@
                         var data = $.parseJSON(msg.data);
                         var dice = data["dice"];
                         var date = new Date()
-                        var roll = "<li> " + data["player"] + " rolled at " + date.toLocaleTimeString() + ": ";
+                        var roll = "<div class='roll-entry'><table><tr><td class='player-date'><strong>" + data["player"] + "</strong> rolled at " + date.toLocaleTimeString() + ": </td><td class='dice-rolls'>";
                         $(dice).each(function (i) {
                                 roll += "<img src='/static/swdice/" + dice[i] + ".png' /> ";
                         })
                         var totalstring = data["total"];
-                        roll += totalstring;
-                        roll += "</li><hr/>";
+                        roll += "</td><td class='roll-results'>" + totalstring + "</td>";
+                        roll += "</table></div>";
                         $('#placeholder').prepend(roll);
                 });
                 // event handler for new connections
@@ -33,7 +40,12 @@
         </script>
     </head>
     <body>
-    <h2>Recent rolls:</h2>
-    <div><ul id='placeholder' style='list-style-type:none'> </ul></div>
+	<div class="container-fluid"><div class="row"><div class="col-md-12">
+		<h3>Recent rolls</h3>
+		<div id='placeholder' class="list-unstyled"></div>
+	</div></div></div>
+	
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/static/js/bootstrap.min.js"></script>
     </body>
 </html>

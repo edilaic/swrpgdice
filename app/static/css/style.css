@@ -1,0 +1,46 @@
+/*@import url(/static/fonts/Starjedi.tff);
+
+.star-font {
+	font-family: "Starjedi", arial, verdana, sans-serif;
+}*/
+
+body {
+	background-color: #1B1B1B !important;
+	color: white !important;
+}
+
+h3 { 
+	color: #F5ED82 !important;
+	font-weight: bold;
+}
+
+/* roll page */
+
+#dice-select .form-group {
+	margin-bottom: 5px;
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+	#dice-select .control-label {
+		padding-left: 0 !important;
+	}
+}
+
+#dice-select .btn {
+	margin-top: 10px;
+}
+
+/* Monitor */
+
+.roll-entry {
+	background-color: #292929;
+	padding: 10px 20px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+}
+
+.dice-rolls {
+	padding-left: 30px;
+	padding-right: 30px;
+}
