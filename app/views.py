@@ -56,7 +56,7 @@ def parse_result(result):
         retval = retval + str(-netsuccess) + " Failure "
     if netadvantage > 0:
         retval = retval + str(netadvantage) + " Advantage "
-    elif netsuccess < 0:
+    elif netadvantage < 0:
         retval = retval + str(-netadvantage) + " Threat "
     if despairs > 0:
         retval = retval + str(despairs) + " Despair "
