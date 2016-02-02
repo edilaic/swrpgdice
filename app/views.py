@@ -4,6 +4,7 @@ import random
 from flask_socketio import emit
 from . import app, socketio
 import json
+import collections
 
 
 @app.route('/')
@@ -23,6 +24,7 @@ DifficultyResult = ["d0", "d1f", "d2f", "d1t", "d1t", "d1t", "d2t", "d1f1t"]
 ProfResult = ["p0", "p1s", "p1s", "p2s", "p2s", "p1a", "p1s1a", "p1s1a", "p1s1a", "p2a", "p2a", "p1c"]
 ChallengeResult = ["c0", "c1f", "c1f", "c2f", "c2f", "c1t", "c1t", "c1f1t", "c1f1t", "c2t", "c2t", "c1d"]
 ForceResult = ["f1b", "f1b", "f1b", "f1b", "f1b", "f1b", "f2b", "f1w", "f1w", "f2w", "f2w", "f2w"]
+prevRolls = collections.deque([], 5)
 
 def parse_result(result):
     successes = 0
@@ -101,6 +103,7 @@ def roll():
                 else:
                     data['total'] = data['total'] + ' and ' + str(random.randint(0,99))
             data['total'] = data['total'] + ' on percentile'
+        prevRolls.append(data)
         socketio.emit('edroll', {'data': json.dumps(data)}, namespace='/swdice')
         return render_template('roll.html', form=RollForm(), result=result)
     return render_template('roll.html', form=form, result=result)
@@ -108,6 +111,8 @@ def roll():
 
 @socketio.on('connect', namespace='/swdice')
 def socket_connect():
+    for d in prevRolls:
+        emit('edroll', {'data': json.dumps(d)}, namespace='/swdice')
     print ('Socket Connected!')
 
 
