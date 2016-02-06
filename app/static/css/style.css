@@ -1,17 +1,103 @@
-/*@import url(/static/fonts/Starjedi.tff);
+/* symbols */
 
-.star-font {
-	font-family: "Starjedi", arial, verdana, sans-serif;
-}*/
+@font-face { font-family: Eotesymbols; src: url('../fonts/eote-symbols.otf'); }
+
+.eotesymbols {
+	font-family: Eotesymbols;
+	color: #EBEC8C;
+}
+
+.die-boost {
+	color: cyan;
+}
+
+.die-ability {
+	color: green;
+}
+
+.die-proficiency {
+	color: yellow;
+}
+
+.die-setback {
+	color: black;
+}
+
+.die-difficulty {
+	color: purple;
+}
+
+.die-challenge {
+	color: red;
+}
+
+.die-force {
+	color: white;
+}
+
+/* General */
 
 body {
-	background-color: #1B1B1B !important;
+	background-color: #26262F !important;
 	color: white !important;
 }
 
+h1 {
+	color: #EBEC8C !important;
+	text-align: center;
+}
+
 h3 { 
-	color: #F5ED82 !important;
+	color: #EBEC8C !important;
 	font-weight: bold;
+}
+
+/* Initiative */
+
+.initiative-entry {
+	background-color: #1E1B25;
+	padding: 10px 20px;
+	border-radius: 10px;
+	margin-bottom: 10px;
+}
+
+#initiative {
+	font-size: 16px;
+}
+	
+#initiative-list a {
+	color: white;
+}
+
+.initiative-entry:hover {
+	background-color: #16131B;
+}
+
+#initiative-list a:hover, #initiative-list a:active {
+	text-decoration: none;
+}
+
+#initiative-list .current {
+	pointer-events: none;
+	cursor: default;
+}
+
+#initiative-list .current li {
+	background-color: #60612A !important;
+}
+
+#init-footer {
+	width: 100%;
+}
+
+#init-round , #init-controls {
+	width: 50%;
+	float: left;
+	margin-bottom: 30px;
+}
+
+#init-controls {
+	text-align: right;
 }
 
 /* roll page */
@@ -27,20 +113,72 @@ h3 {
 	}
 }
 
+#dice-pool { clear: both; }
+
+#dice-pool .control-label {
+	padding-right: 5px !important;
+	font-size: 15px;
+}
+
+#dice-pool .col-md-4 {
+	padding-left: 5px !important;
+}
+
+.die-symbol {
+	width: 30px;
+	height: 30px;
+}
+
 #dice-select .btn {
 	margin-top: 10px;
 }
 
-/* Monitor */
+/* Destiny Points */
+
+.destiny-points {
+	font-size: 48px;
+}
+
+/* Roll History */
 
 .roll-entry {
-	background-color: #292929;
-	padding: 10px 20px;
+	background-color: #1E1B25;
+	padding: 5px 20px;
 	border-radius: 10px;
 	margin-bottom: 10px;
 }
 
+.name {
+	color: #EBEC8C;
+	font-weight: bold;
+}
+
+.roll-table {
+	margin-bottom: 0 !important;
+}
+	
+.roll-table td {
+	border: none !important;
+	vertical-align: middle !important;
+}
+
+.roll-results {
+	min-width: 250px;
+	text-align: center;
+}
+
 .dice-rolls {
-	padding-left: 30px;
-	padding-right: 30px;
+	text-align: right !important;
+}
+
+.roll-entry img {
+	height: 30px;
+	width: 30px;
+}
+
+@media (min-width: 1200px) {
+	.roll-entry img {
+		height: 50px;
+		width: 50px;
+	}
 }

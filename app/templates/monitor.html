@@ -7,6 +7,7 @@
 		<!-- CSS files -->
 		<link href="/static/css/style.css" rel="stylesheet">
 		<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
 		<!-- Javascript -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
@@ -23,13 +24,14 @@
                         var data = $.parseJSON(msg.data);
                         var dice = data["dice"];
                         var date = new Date()
-                        var roll = "<div class='roll-entry'><table><tr><td class='player-date'><strong>" + data["player"] + "</strong> rolled at " + date.toLocaleTimeString() + ": </td><td class='dice-rolls'>";
+                        var roll = "<div class='roll-entry'><table class='table roll-table'><tr><td class='player'><span class='name'>" + data["player"] + "</span> rolled: </td>";
+                        var totalstring = data["total"];
+                        roll += "<td class='roll-results'>" + totalstring + "</td>";
+						roll += "<td class='dice-rolls'>"
                         $(dice).each(function (i) {
                                 roll += "<img src='/static/swdice/" + dice[i] + ".png' /> ";
                         })
-                        var totalstring = data["total"];
-                        roll += "</td><td class='roll-results'>" + totalstring + "</td>";
-                        roll += "</table></div>";
+                        roll += "</td></table></div>";
                         $('#placeholder').prepend(roll);
                 });
                 // event handler for new connections
@@ -40,10 +42,105 @@
         </script>
     </head>
     <body>
-	<div class="container-fluid"><div class="row"><div class="col-md-12">
-		<h3>Recent rolls</h3>
-		<div id='placeholder' class="list-unstyled"></div>
-	</div></div></div>
+	<div class="container-fluid">
+	  <div class="row">
+		<div class="col-md-3">
+			<section id="destiny-light" class="destiny-points">
+				<p><span class="eotesymbols die-force">z</span><span class="eotesymbols die-force">z</span><span class="eotesymbols die-force">z</span></p>
+			</section>
+		</div>
+		<div class="col-md-6">
+			<h1>Star Wars RPG Game Manager</h1>
+		</div>
+		<div class="col-md-3">
+			<section id="destiny-dark" class="destiny-points">
+				<p class="text-right"><span class="eotesymbols die-setback">z</span><span class="eotesymbols die-setback">z</span><span class="eotesymbols die-setback">z</span></p>
+			</section>
+		</div>
+	  </div>
+	<div class="row">
+	  <div class="col-md-5 col-lg-4">
+		<section id="initiative">
+			<h3>Initiative</h3>
+			<ul id="initiative-list" class="list-unstyled">
+				<a href="#">
+					<li class="initiative-entry">
+						<b>Player Slot</b> <span class="pull-right"><span class="eotesymbols">s</span> 4
+					</li>
+				</a>
+			</ul>
+			<div id="init-footer">
+				<div id="init-round" class="form-inline">
+					<b>Round</b> 1</div>
+				<div id="init-controls">
+					<a id="init-back" href="#" class="btn btn-primary" type="button">Back</a>
+					<a id="init-reset" href="#" class="btn btn-default" type="button">Reset</a>
+					<a id="init-next" href="#" class="btn btn-primary" type="button">Next</a>
+				</div>
+			</div>
+		</section>
+		<section id="dice-pool">
+		  <h3 style="margin-bottom: 15px;">Choose your Dice</h3>
+		  <form id="dice-select" class="form-horizontal" action="" method="post" name="roll">
+            {{ form.hidden_tag() }}
+			<div id="form-player" class="form-group">
+				<label class="col-md-4 control-label">Player</label>
+				<div class="col-md-8">{{ form.player( class_="form-control" ) }}<br></div>
+			</div>
+			<div class="row">
+			  <div class="col-md-6">
+				<div id="form-boost" class="form-group">
+					<label class="col-md-8 control-label">Boost <span class="eotesymbols die-boost">b</span></label>
+					<div class="col-md-4">{{ form.boost( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-ability" class="form-group">
+					<label class="col-md-8 control-label">Ability <span class="eotesymbols die-ability">d</span></label>
+					<div class="col-md-4">{{ form.ability( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-prof" class="form-group">
+					<label class="col-md-8 control-label">Proficiency <span class="eotesymbols die-proficiency">c</span></label>
+					<div class="col-md-4">{{ form.prof( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-force" class="form-group">
+					<label class="col-md-8 control-label">Force <span class="eotesymbols die-force">c</span></label>
+					<div class="col-md-4">{{ form.force( class_="form-control dice-input" ) }}</div>
+				</div>
+			</div>
+			  <div class="col-md-6">
+				<div id="form-setback" class="form-group">
+					<label class="col-md-8 control-label">Setback <span class="eotesymbols die-setback">b</span></label>
+					<div class="col-md-4">{{ form.setback( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-difficulty" class="form-group">
+					<label class="col-md-8 control-label">Difficulty <span class="eotesymbols die-difficulty">d</span></label>
+					<div class="col-md-4">{{ form.difficulty( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-challenge" class="form-group">
+					<label class="col-md-8 control-label">Challenge <span class="eotesymbols die-challenge">c</span></label>
+					<div class="col-md-4">{{ form.challenge( class_="form-control dice-input" ) }}</div>
+				</div>
+				<div id="form-percentile" class="form-group">
+					<label class="col-md-8 control-label">Percentile %</label>
+					<div class="col-md-4">{{ form.percentile( class_="form-control dice-input" ) }}</div>
+				</div>
+			</div>
+			  <div class="col-md-12">
+				<div class="form-group">
+					<div class="col-md-12 text-right">
+						<a id="reset-dice" href="#" class="btn btn-default btn-lg" type="button">Reset</a>
+						<input class="btn btn-success btn-lg" type="submit" value="Roll Dice!"/>
+					</div>
+				</div>
+			</div>
+			</div>
+        </form>
+		</section>
+	  </div>
+	  
+	  <div class="col-md-7 col-lg-8">
+		<section id="roll-history"><div id='placeholder'></div></section>
+	  </div>
+	</div></div>
 	
 	<!-- Include all compiled plugins (below), or include individual files as needed -->
 	<script src="/static/js/bootstrap.min.js"></script>

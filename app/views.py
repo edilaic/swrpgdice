@@ -53,17 +53,47 @@ def parse_result(result):
     netadvantage = advantages - threats
     retval = ""
     if netsuccess > 0:
-        retval = retval + str(netsuccess) + " Success "
+		retval = retval + str(netsuccess)
+		if netsuccess > 1:
+			retval = retval + " Successes "
+		else:
+			retval = retval + " Success "
+		retval = retval + "<span class='eotesymbols'>s</span> "
     elif netsuccess < 0:
-        retval = retval + str(-netsuccess) + " Failure "
+		retval = retval + str(-netsuccess)
+		if -netsuccess > 1:
+			retval = retval + " Failures "
+		else:
+			retval = retval + " Failure "
+		retval = retval + "<span class='eotesymbols'>f</span> "
     if netadvantage > 0:
-        retval = retval + str(netadvantage) + " Advantage "
+		retval = retval + str(netadvantage)
+		if netadvantage > 1:
+			retval = retval + " Advantages "
+		else:
+			retval = retval + " Advantage "
+		retval = retval + "<span class='eotesymbols'>a</span> "
     elif netadvantage < 0:
-        retval = retval + str(-netadvantage) + " Threat "
+		retval = retval + str(-netadvantage)
+		if -netadvantage > 1:
+			retval = retval + " Threats "
+		else:
+			retval = retval + " Threat "
+		retval = retval + "<span class='eotesymbols'>t</span> "
     if despairs > 0:
-        retval = retval + str(despairs) + " Despair "
+		retval = retval + str(despairs)
+		if despairs > 1:
+			retval = retval + " Despairs "
+		else:
+			retval = retval + " Despair "
+		retval = retval + "<span class='eotesymbols'>y</span> "	
     if triumphs > 0:
-        retval = retval + str(triumphs) + " Triumph "
+		retval = retval + str(triumphs)
+		if triumphs > 1:
+			retval = retval + " Triumphs "
+		else:
+			retval = retval + " Triumph "
+		retval = retval + "<span class='eotesymbols'>x</span> "	
     return retval
 
 
@@ -123,9 +153,44 @@ def socket_disconnect():
 
 @app.route('/monitor')
 def monitor():
-    print ('Loading monitor')
-    return render_template('monitor.html')
-
+	print ('Loading monitor')
+	form = RollForm()
+	result = []
+	if form.validate_on_submit():
+		# Boost Dice:
+		player = form.player.data
+		if form.boost.data:
+			for i in range(form.boost.data):
+				result.append(random.choice(BoostResult))
+		if form.ability.data:
+			for i in range(form.ability.data):
+				result.append(random.choice(AbilityResult))
+		if form.prof.data:
+			for i in range(form.prof.data):
+				result.append(random.choice(ProfResult))
+		if form.setback.data:
+			for i in range(form.setback.data):
+				result.append(random.choice(SetbackResult))
+		if form.difficulty.data:
+			for i in range(form.difficulty.data):
+				result.append(random.choice(DifficultyResult))
+		if form.challenge.data:
+			for i in range(form.challenge.data):
+				result.append(random.choice(ChallengeResult))
+		if form.force.data:
+			for i in range(form.force.data):
+				result.append(random.choice(ForceResult))
+		data = {'dice': result, 'player': player, 'total': parse_result(result)}
+		if form.percentile.data:
+			for i in range(form.percentile.data):
+				if data['total'] == '':
+					data['total'] = str(random.randint(0,99))
+				else:
+					data['total'] = data['total'] + ' and ' + str(random.randint(0,99))
+			data['total'] = data['total'] + ' on percentile'
+		prevRolls.append(data)
+		socketio.emit('edroll', {'data': json.dumps(data)}, namespace='/swdice')
+	return render_template('monitor.html', form=RollForm(), result=result)
 
 @socketio.on_error_default
 def default_error_handler(e):
