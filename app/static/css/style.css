@@ -64,6 +64,23 @@ h3 {
 #initiative {
 	font-size: 16px;
 }
+
+#init-header {
+	width: 50%; 
+	float: left;
+	margin-top: 0;
+}
+
+#init-round  {
+	margin-top: 3px;
+	width: 50%;
+	float: left;
+	text-align: right;
+}
+
+#round-num {
+	font-weight: bold;
+}
 	
 #initiative-list a {
 	color: white;
@@ -88,16 +105,40 @@ h3 {
 
 #init-footer {
 	width: 100%;
-}
-
-#init-round , #init-controls {
-	width: 50%;
-	float: left;
 	margin-bottom: 30px;
 }
 
-#init-controls {
-	text-align: right;
+#init-setup {
+	color: black !important;
+}
+
+.initorder-entry {
+	padding: 5px 20px;
+}
+
+.init-slot {
+	font-weight: bold;
+	height: 34px; 
+	line-height: 34px;
+}
+
+.init-slot  .pull-right .eotesymbols {
+	margin-left: 10px;
+}
+
+.initsuccess-input {
+	width: 75px !important;
+	margin-right: 10px;
+}
+
+.initadv-input {
+	width: 75px !important;
+}
+
+.remove {
+	height: 34px;
+	line-height: 34px;
+	margin-left: 10px;
 }
 
 /* roll page */

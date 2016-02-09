@@ -64,3 +64,82 @@ $(document).ready(function(){
 		return false;
 	});
 });
+
+$('#add-player').click(function () {
+	$('#init-orderlist').append('<li class="initorder-entry"><span class="init-slot">Player Slot</span> <button type="button" class="close remove pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button> <span class="pull-right"><span class="eotesymbols">s</span> <input type="number" class="initsuccess-input form-control"><span class="eotesymbols">a</span> <input type="number" class="initadv-input form-control"></span></li>');
+})
+
+$('#add-npc').click(function () {
+	$('#init-orderlist').append('<li class="initorder-entry"><span class="init-slot">NPC Slot</span> <button type="button" class="close remove pull-right" aria-label="Close"><span aria-hidden="true">&times;</span></button> <span class="pull-right"><span class="eotesymbols">s</span> <input type="number" class="initsuccess-input form-control"><span class="eotesymbols">a</span> <input type="number" class="initadv-input form-control"></span></li>');
+})
+
+$(document).on('click', '.remove', function() {
+	$(this).parent().remove();
+});
+
+var initorder = [];
+
+$('#set-initorder').click(function () {
+	initorder = [];
+	$( '.initorder-entry').each(function() {
+		var initvalue = $(this).find('.initsuccess-input').val() * 100;
+		initvalue += $(this).find('.initadv-input').val() * 10;
+		if ( $(this).find('.init-slot').text() == 'Player Slot' ) {
+			initvalue += 1;
+		}
+		initorder.push(initvalue);
+	});
+	initorder.sort().reverse();
+	$('.init-entry').remove();
+	
+	for (i = 0; i < initorder.length; i++) {
+		if ( initorder[i] % 2 == 0 ) { // if the value is even, it's a NPC's initiative
+			var slottype = 'NPC Slot';
+		} else {
+			var slottype = 'Player Slot';
+		}
+		var successes = Math.floor( initorder[i] / 100 );
+		var advantages = Math.floor( ( initorder[i] % 100 ) / 10 );
+		if ( i == 0 ) {
+			var current = "current";
+		} else {
+			var current = "";
+		}
+		$('#initiative-list').append('<a class="init-entry ' + current + '" href="#"><li class="initiative-entry"><b>' + slottype + '</b> <span class="pull-right"><span class="eotesymbols">s</span> ' + successes + ' <span class="eotesymbols">a</span> ' + advantages + '</li></a>');
+	}
+	$('#init-round').html('Round <span id="round-num">1</span>');
+	$('#init-setup').modal('hide');
+});
+
+$('#init-reset').click(function () {
+	$('.init-entry').remove();
+	$('#initiative-list').append('<a class="init-entry" href="#"><li class="initiative-entry"><i>Add combatants to start initiative</i></li></a>');
+	$('#init-round').html('');
+});
+
+$('#init-back').click(function () {
+	var current = $('.current');
+	if ( $('.current').is(':first-child') ) {
+		var round = parseInt( $('#round-num').text() );
+		if ( round != 1 ) {
+			$('#initiative-list a:last').addClass('current');
+			$('#round-num').text( round - 1);
+			current.removeClass( 'current' );
+		}
+	} else {
+		$('.current').prev().addClass( 'current' );
+		current.removeClass( 'current' );
+	}
+});
+
+$('#init-next').click(function () {
+	var current = $('.current');
+	if ( $('.current').is(':last-child') ) {
+		$('#initiative-list a:first').addClass('current');
+		var round = parseInt( $('#round-num').text() );
+		$('#round-num').text( round + 1);
+	} else {
+		$('.current').next().addClass( 'current' );
+	}
+	current.removeClass( 'current' );
+});

@@ -1,19 +1,46 @@
 <section id="initiative">
-	<h3>Initiative</h3>
-	<ul id="initiative-list" class="list-unstyled">
-		<a href="#">
-			<li class="initiative-entry">
-				<b>Player Slot</b> <span class="pull-right"><span class="eotesymbols">s</span> 4
-			</li>
-		</a>
+	<h3 id="init-header">Initiative</h3>
+	<div id="init-round"></div>
+	<ul id="initiative-list" class="list-unstyled" style="clear: both;">
+		<a class="init-entry" href="#"><li class="initiative-entry"><i>Add combatants to start initiative</i></li></a>
 	</ul>
-	<div id="init-footer">
-		<div id="init-round" class="form-inline">
-			<b>Round</b> 1</div>
-		<div id="init-controls">
+	<div id="init-footer row">
+		<div class="col-md-3">
 			<a id="init-back" href="#" class="btn btn-primary" type="button">Back</a>
+        </div>
+        <div class="col-md-6 text-center">
+            <button id="init-start" class="btn btn-success" type="button" data-toggle="modal" data-target="#init-setup">Start</button>
 			<a id="init-reset" href="#" class="btn btn-default" type="button">Reset</a>
+        </div>
+        <div class="col-md-3 text-right">
 			<a id="init-next" href="#" class="btn btn-primary" type="button">Next</a>
 		</div>
 	</div>
+    <div style="clear: both; height: 10px;"></div>
 </section>
+
+<!-- Modal -->
+<div class="modal fade" id="init-setup" tabindex="-1" role="dialog" aria-labelledby="initLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="initLabel">Initiative Order</h4>
+      </div>
+      <div class="modal-body" style="min-height: 50%;"><form class="form-inline"><ul id="init-orderlist" class="list-unstyled">
+      </ul></form></div>
+      <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <button id="add-player" class="btn btn-success">Add Player</button>
+                <button id="add-npc" class="btn btn-danger">Add NPC</button>
+            </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="set-initorder">Save</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
