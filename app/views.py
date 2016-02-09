@@ -7,16 +7,6 @@ import json
 import collections
 
 
-@app.route('/')
-@app.route('/index')
-def index():
-    return 'Welcome to the Star Wars Dice Roller! Go to /roll to start!'
-
-
-@app.route('/crawl')
-def crawl():
-    return render_template('crawl.html')
-
 BoostResult = ["b0", "b0", "b1s", "b1s1a", "b2a", "b1a"]
 SetbackResult = ["s0", "s0", "s1f", "s1f", "s1t", "s1t"]
 AbilityResult = ["a0", "a1s", "a1s", "a2s", "a1a", "a1a", "a1s1a", "a2a"]
@@ -25,6 +15,7 @@ ProfResult = ["p0", "p1s", "p1s", "p2s", "p2s", "p1a", "p1s1a", "p1s1a", "p1s1a"
 ChallengeResult = ["c0", "c1f", "c1f", "c2f", "c2f", "c1t", "c1t", "c1f1t", "c1f1t", "c2t", "c2t", "c1d"]
 ForceResult = ["f1b", "f1b", "f1b", "f1b", "f1b", "f1b", "f2b", "f1w", "f1w", "f2w", "f2w", "f2w"]
 prevRolls = collections.deque([], 5)
+
 
 def parse_result(result):
     successes = 0
@@ -53,48 +44,59 @@ def parse_result(result):
     netadvantage = advantages - threats
     retval = ""
     if netsuccess > 0:
-		retval = retval + str(netsuccess)
-		if netsuccess > 1:
-			retval = retval + " Successes "
-		else:
-			retval = retval + " Success "
-		retval = retval + "<span class='eotesymbols'>s</span> "
+        retval = retval + str(netsuccess)
+        if netsuccess > 1:
+            retval = retval + " Successes "
+        else:
+            retval = retval + " Success "
+        retval = retval + "<span class='eotesymbols'>s</span> "
     elif netsuccess < 0:
-		retval = retval + str(-netsuccess)
-		if -netsuccess > 1:
-			retval = retval + " Failures "
-		else:
-			retval = retval + " Failure "
-		retval = retval + "<span class='eotesymbols'>f</span> "
+        retval = retval + str(-netsuccess)
+        if -netsuccess > 1:
+            retval = retval + " Failures "
+        else:
+            retval = retval + " Failure "
+        retval = retval + "<span class='eotesymbols'>f</span> "
     if netadvantage > 0:
-		retval = retval + str(netadvantage)
-		if netadvantage > 1:
-			retval = retval + " Advantages "
-		else:
-			retval = retval + " Advantage "
-		retval = retval + "<span class='eotesymbols'>a</span> "
+        retval = retval + str(netadvantage)
+        if netadvantage > 1:
+            retval = retval + " Advantages "
+        else:
+            retval = retval + " Advantage "
+        retval = retval + "<span class='eotesymbols'>a</span> "
     elif netadvantage < 0:
-		retval = retval + str(-netadvantage)
-		if -netadvantage > 1:
-			retval = retval + " Threats "
-		else:
-			retval = retval + " Threat "
-		retval = retval + "<span class='eotesymbols'>t</span> "
+        retval = retval + str(-netadvantage)
+        if -netadvantage > 1:
+            retval = retval + " Threats "
+        else:
+            retval = retval + " Threat "
+        retval = retval + "<span class='eotesymbols'>t</span> "
     if despairs > 0:
-		retval = retval + str(despairs)
-		if despairs > 1:
-			retval = retval + " Despairs "
-		else:
-			retval = retval + " Despair "
-		retval = retval + "<span class='eotesymbols'>y</span> "	
+        retval = retval + str(despairs)
+        if despairs > 1:
+            retval = retval + " Despairs "
+        else:
+            retval = retval + " Despair "
+        retval = retval + "<span class='eotesymbols'>y</span> " 
     if triumphs > 0:
-		retval = retval + str(triumphs)
-		if triumphs > 1:
-			retval = retval + " Triumphs "
-		else:
-			retval = retval + " Triumph "
-		retval = retval + "<span class='eotesymbols'>x</span> "	
+        retval = retval + str(triumphs)
+        if triumphs > 1:
+            retval = retval + " Triumphs "
+        else:
+            retval = retval + " Triumph "
+        retval = retval + "<span class='eotesymbols'>x</span> " 
     return retval
+
+
+@app.route('/')
+@app.route('/index')
+def index():
+    return 'Welcome to the Star Wars Dice Roller! Go to /roll to start!'
+
+
+@app.route('/crawl')
+def crawl():
+    return render_template('crawl.html')
 
 
 @app.route('/roll', methods=['GET', 'POST'])
@@ -139,6 +141,52 @@ def roll():
     return render_template('roll.html', form=form, result=result)
 
 
+@app.route('/game')
+def game():
+    form = RollForm()
+    result = []
+    if form.validate_on_submit():
+        # Boost Dice:
+        player = form.player.data
+        if form.boost.data:
+            for i in range(form.boost.data):
+                result.append(random.choice(BoostResult))
+        if form.ability.data:
+            for i in range(form.ability.data):
+                result.append(random.choice(AbilityResult))
+        if form.prof.data:
+            for i in range(form.prof.data):
+                result.append(random.choice(ProfResult))
+        if form.setback.data:
+            for i in range(form.setback.data):
+                result.append(random.choice(SetbackResult))
+        if form.difficulty.data:
+            for i in range(form.difficulty.data):
+                result.append(random.choice(DifficultyResult))
+        if form.challenge.data:
+            for i in range(form.challenge.data):
+                result.append(random.choice(ChallengeResult))
+        if form.force.data:
+            for i in range(form.force.data):
+                result.append(random.choice(ForceResult))
+        data = {'dice': result, 'player': player, 'total': parse_result(result)}
+        if form.percentile.data:
+            for i in range(form.percentile.data):
+                if data['total'] == '':
+                    data['total'] = str(random.randint(0,99))
+                else:
+                    data['total'] = data['total'] + ' and ' + str(random.randint(0,99))
+            data['total'] = data['total'] + ' on percentile'
+        prevRolls.append(data)
+        socketio.emit('edroll', {'data': json.dumps(data)}, namespace='/swdice')
+    return render_template('game.html', form=RollForm(), result=result)
+
+
+@app.route('/monitor')
+def monitor():
+    return render_template('monitor.html')
+
+
 @socketio.on('connect', namespace='/swdice')
 def socket_connect():
     for d in prevRolls:
@@ -150,47 +198,6 @@ def socket_connect():
 def socket_disconnect():
     print ('Socket Disconnected!')
 
-
-@app.route('/monitor')
-def monitor():
-	print ('Loading monitor')
-	form = RollForm()
-	result = []
-	if form.validate_on_submit():
-		# Boost Dice:
-		player = form.player.data
-		if form.boost.data:
-			for i in range(form.boost.data):
-				result.append(random.choice(BoostResult))
-		if form.ability.data:
-			for i in range(form.ability.data):
-				result.append(random.choice(AbilityResult))
-		if form.prof.data:
-			for i in range(form.prof.data):
-				result.append(random.choice(ProfResult))
-		if form.setback.data:
-			for i in range(form.setback.data):
-				result.append(random.choice(SetbackResult))
-		if form.difficulty.data:
-			for i in range(form.difficulty.data):
-				result.append(random.choice(DifficultyResult))
-		if form.challenge.data:
-			for i in range(form.challenge.data):
-				result.append(random.choice(ChallengeResult))
-		if form.force.data:
-			for i in range(form.force.data):
-				result.append(random.choice(ForceResult))
-		data = {'dice': result, 'player': player, 'total': parse_result(result)}
-		if form.percentile.data:
-			for i in range(form.percentile.data):
-				if data['total'] == '':
-					data['total'] = str(random.randint(0,99))
-				else:
-					data['total'] = data['total'] + ' and ' + str(random.randint(0,99))
-			data['total'] = data['total'] + ' on percentile'
-		prevRolls.append(data)
-		socketio.emit('edroll', {'data': json.dumps(data)}, namespace='/swdice')
-	return render_template('monitor.html', form=RollForm(), result=result)
 
 @socketio.on_error_default
 def default_error_handler(e):
