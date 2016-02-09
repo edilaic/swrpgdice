@@ -87,17 +87,24 @@
                 </div>
             </div></div>
             <div class="form-group"><div class="col-sm-10 col-md-8" style="text-align: right;">
-                <a id="destiny-point" href="#" class="btn btn-default btn-lg" type="button">Use Destiny Point!</a>
+                <a id="destiny-point-dark" href="#" class="btn btn-default btn-lg" type="button">Use Destiny Point!</a>
                 <a id="reset-dice" href="#" class="btn btn-default btn-lg" type="button">Reset</a>
                 <input class="btn btn-success btn-lg" type="submit" value="Roll Dice!"/>
             </div></div>
           </form>
+          <div id="form-destiny" class="form-inline">
+              <label class="control-label">Dark Destiny Dice</label>
+              <input class="form-control dice-input" id="dark" name="dark" type="text" value="">
+              <label class="control-label">Light Destiny Dice</label>
+              <input class="form-control dice-input" id="light" name="light" type="text" value="">
+              <a id="set-destiny-dice" href="#" class="btn btn-default btn-lg" type="button">Set Destiny</a>
+          </div>
     </div></div></div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/script.js"></script>
+    <script src="/static/js/roll.js"></script>
   </body>
 </html>

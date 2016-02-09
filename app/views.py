@@ -15,6 +15,7 @@ ProfResult = ["p0", "p1s", "p1s", "p2s", "p2s", "p1a", "p1s1a", "p1s1a", "p1s1a"
 ChallengeResult = ["c0", "c1f", "c1f", "c2f", "c2f", "c1t", "c1t", "c1f1t", "c1f1t", "c2t", "c2t", "c1d"]
 ForceResult = ["f1b", "f1b", "f1b", "f1b", "f1b", "f1b", "f2b", "f1w", "f1w", "f2w", "f2w", "f2w"]
 prevRolls = collections.deque([], 5)
+destinyDice = {'light': 0, 'dark': 0}
 
 
 def parse_result(result):
@@ -77,14 +78,14 @@ def parse_result(result):
             retval = retval + " Despairs "
         else:
             retval = retval + " Despair "
-        retval = retval + "<span class='eotesymbols'>y</span> " 
+        retval = retval + "<span class='eotesymbols'>y</span> "
     if triumphs > 0:
         retval = retval + str(triumphs)
         if triumphs > 1:
             retval = retval + " Triumphs "
         else:
             retval = retval + " Triumph "
-        retval = retval + "<span class='eotesymbols'>x</span> " 
+        retval = retval + "<span class='eotesymbols'>x</span> "
     return retval
 
 
@@ -139,6 +140,34 @@ def roll():
         socketio.emit('edroll', {'data': json.dumps(data)}, namespace='/swdice')
         return render_template('roll.html', form=RollForm(), result=result)
     return render_template('roll.html', form=form, result=result)
+
+
+@app.route('/destiny', methods=['GET'])
+def destiny():
+    if request.args.get('side') and destinyDice[request.args.get('side')] > 0:
+        if request.args.get('side') == 'light':
+            destinyDice['light'] = destinyDice['light'] - 1
+            destinyDice['dark'] = destinyDice['dark'] + 1
+        else:
+            destinyDice['light'] = destinyDice['light'] + 1
+            destinyDice['dark'] = destinyDice['dark'] - 1
+        result = " used a " + request.args.get('side') + " destiny point!"
+        data = {'light': destinyDice['light'], 'dark': destinyDice['dark'], 'player': request.args.get('player'), 'change': result}
+        socketio.emit('destiny', {'data': json.dumps(data)}, namespace='/swdice')
+        return True
+    return False
+
+
+@app.route('/setdestiny', methods=['GET'])
+def destiny():
+    if request.args.get('dark') and request.args.get('light'):
+            destinyDice['light'] = request.args.get('light')
+            destinyDice['dark'] = request.args.get('dark')
+            result = "The Destiny Pool has been set to " + request.args.get('light') + " light side points and " + request.args.get('dark') + " dark side points."
+        data = {'light': destinyDice['light'], 'dark': destinyDice['dark'], 'change': result}
+        socketio.emit('setdestiny', {'data': json.dumps(data)}, namespace='/swdice')
+        return True
+    return False
 
 
 @app.route('/game')
