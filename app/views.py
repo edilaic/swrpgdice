@@ -17,6 +17,10 @@ ForceResult = ["f1b", "f1b", "f1b", "f1b", "f1b", "f1b", "f2b", "f1w", "f1w", "f
 prevRolls = collections.deque([], 5)
 destinyDice = {'light': 0, 'dark': 0}
 
+# Initiative Variables
+initorder = []
+round = 1
+initposition = 0
 
 def parse_result(result):
     successes = 0
@@ -257,12 +261,52 @@ def game():
 def monitor():
     return render_template('monitor.html')
 
+@socketio.on('initInit', namespace='/swdice')
+def socket_initInit(data):
+	global initorder, round, initposition
+	initorder = data['initorder']
+	round = data['round']
+	initposition = data['initposition']
+	socketio.emit('displayinit', {'data': json.dumps(data)}, namespace='/swdice')
+	
+@socketio.on('initReset', namespace='/swdice')
+def socket_initReset():
+	global initorder, round, initposition
+	initorder = []
+	round = 1
+	initposition = 0
+	socketio.emit('resetinitiative', namespace='/swdice')
+	
+@socketio.on('initNext', namespace='/swdice')
+def socket_initNext():
+	global round, initposition
+	if initposition == ( len(initorder) - 1):
+		initposition = 0
+		round = round + 1
+	else: 
+		initposition = initposition + 1
+	data = { 'round' : round, 'initposition' : initposition }
+	socketio.emit('nextinitiative', {'data': json.dumps(data)}, namespace='/swdice')
+	
+@socketio.on('initBack', namespace='/swdice')
+def socket_initBack():
+	global round, initposition
+	if initposition == 0:
+		if round != 1:
+			initposition = len(initorder) - 1
+			round = round - 1
+	else: 
+		initposition = initposition - 1
+	data = { 'round' : round, 'initposition' : initposition }
+	socketio.emit('backinitiative', {'data': json.dumps(data)}, namespace='/swdice')
 
 @socketio.on('connect', namespace='/swdice')
 def socket_connect():
-    for d in prevRolls:
-        emit('edroll', {'data': json.dumps(d)}, namespace='/swdice')
-    print ('Socket Connected!')
+	data = { 'initorder': initorder, 'round' : round, 'initposition' : initposition }
+	socketio.emit('displayinit', {'data': json.dumps(data)}, namespace='/swdice')
+	for d in prevRolls:
+		emit('edroll', {'data': json.dumps(d)}, namespace='/swdice')
+	print ('Socket Connected!')
 
 
 @socketio.on('disconnect', namespace='/swdice')
@@ -272,5 +316,6 @@ def socket_disconnect():
 
 @socketio.on_error_default
 def default_error_handler(e):
-    print(request.event["message"])  # "my error event"
-    print(request.event["args"])     # (data,)
+	print('OMG an error! D:') # D:
+	print(request.event["message"])  # "my error event"
+	print(request.event["args"])     # (data,)

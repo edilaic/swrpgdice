@@ -1,9 +1,11 @@
+var socket;
+
 $(document).ready(function(){
 	// change to an empty string to use the global namespace
 	// the socket.io documentation recommends sending an 
 	// explicit package upon connection
 	// this is specially important when using the global namespace
-	var socket = io.connect('http://' + document.domain + ':' + location.port + '/swdice');
+	socket = io.connect('http://' + document.domain + ':' + location.port + '/swdice');
 
 	// event handler for server sent data
 	// the data is displayed in the "Received" section of the page
@@ -58,7 +60,34 @@ $(document).ready(function(){
             $('#destiny-light p').prepend('<span class="eotesymbols die-force">z</span>');
         }
 	});
-
+	
+	socket.on('displayinit', function(msg) {
+		var data = $.parseJSON(msg.data);
+		displayInitOrder(data['initorder'], data['round'], data['initposition']);
+	});
+	
+	socket.on('resetinitiative', function() {
+		$('.init-entry').remove();
+		$('#initiative-list').append('<a class="init-entry" href="#"><li class="initiative-entry"><i>Add combatants to start initiative</i></li></a>');
+		$('#init-round').html('');
+	});
+	
+	socket.on('backinitiative', function(msg) {
+		var data = $.parseJSON(msg.data);
+		var current = $('.current');
+		$('#round-num').text(data['round']); // Set round number
+		current.removeClass( 'current' );
+		$('#initiative-list a').eq( data['initposition'] ).addClass( 'current' );
+	});
+	
+	socket.on('nextinitiative', function(msg) {
+		var data = $.parseJSON(msg.data);
+		var current = $('.current');
+		$('#round-num').text(data['round']); // Set round number
+		current.removeClass( 'current' );
+		$('#initiative-list a').eq( data['initposition'] ).addClass( 'current' );
+	});
+	
 	// event handler for new connections
 	socket.on('connect', function() {
 		return false;
@@ -77,7 +106,33 @@ $(document).on('click', '.remove', function() {
 	$(this).parent().remove();
 });
 
+// Use Destiny Point
+
+$('#destiny-point').click(function (e) {
+    e.preventDefault();
+    $.get( "/destiny", {
+        player: $('#player').val(),
+        side: "light"
+    });
+});
+
+// Dice Roller on Page
+
+$('#roll-dice').click(function (e) {
+    e.preventDefault();
+    $.post( "/roll", $('form#dice-select').serialize() );
+});
+
+$('#reset-dice').click(function (e) {
+	e.preventDefault();
+	$('.dice-input').val('');
+});
+
+// Initiative
+
 var initorder = [];
+var roundnum = 1;
+var initposition = 0;
 
 $('#set-initorder').click(function () {
 	initorder = [];
@@ -90,8 +145,15 @@ $('#set-initorder').click(function () {
 		initorder.push(initvalue);
 	});
 	initorder.sort().reverse();
-	$('.init-entry').remove();
+	$('#init-setup').modal('hide');
 	
+	socket.emit('initInit', { initorder : initorder, round : roundnum, initposition : initposition } );
+});
+	
+function displayInitOrder(initorder, roundnum, initposition) {
+	if (initorder.length === 0) {
+		$('#initiative-list').append('<a class="init-entry" href="#"><li class="initiative-entry"><i>Add combatants to start initiative</i></li></a>');
+	}
 	for (i = 0; i < initorder.length; i++) {
 		if ( initorder[i] % 2 == 0 ) { // if the value is even, it's a NPC's initiative
 			var slottype = 'NPC Slot';
@@ -100,46 +162,28 @@ $('#set-initorder').click(function () {
 		}
 		var successes = Math.floor( initorder[i] / 100 );
 		var advantages = Math.floor( ( initorder[i] % 100 ) / 10 );
-		if ( i == 0 ) {
+		if ( i == initposition ) {
 			var current = "current";
 		} else {
 			var current = "";
 		}
 		$('#initiative-list').append('<a class="init-entry ' + current + '" href="#"><li class="initiative-entry"><b>' + slottype + '</b> <span class="pull-right"><span class="eotesymbols">s</span> ' + successes + ' <span class="eotesymbols">a</span> ' + advantages + '</li></a>');
 	}
-	$('#init-round').html('Round <span id="round-num">1</span>');
-	$('#init-setup').modal('hide');
-});
+	if (roundnum == 1) {
+		$('#init-round').html('');
+	} else {
+		$('#init-round').html('Round <span id="round-num">' + roundnum + '</span>');
+	}
+}
 
 $('#init-reset').click(function () {
-	$('.init-entry').remove();
-	$('#initiative-list').append('<a class="init-entry" href="#"><li class="initiative-entry"><i>Add combatants to start initiative</i></li></a>');
-	$('#init-round').html('');
+	socket.emit('initReset');
 });
 
 $('#init-back').click(function () {
-	var current = $('.current');
-	if ( $('.current').is(':first-child') ) {
-		var round = parseInt( $('#round-num').text() );
-		if ( round != 1 ) {
-			$('#initiative-list a:last').addClass('current');
-			$('#round-num').text( round - 1);
-			current.removeClass( 'current' );
-		}
-	} else {
-		$('.current').prev().addClass( 'current' );
-		current.removeClass( 'current' );
-	}
+	socket.emit('initBack');
 });
 
 $('#init-next').click(function () {
-	var current = $('.current');
-	if ( $('.current').is(':last-child') ) {
-		$('#initiative-list a:first').addClass('current');
-		var round = parseInt( $('#round-num').text() );
-		$('#round-num').text( round + 1);
-	} else {
-		$('.current').next().addClass( 'current' );
-	}
-	current.removeClass( 'current' );
+	socket.emit('initNext');;
 });
