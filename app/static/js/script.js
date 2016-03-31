@@ -63,6 +63,7 @@ $(document).ready(function(){
 	
 	socket.on('displayinit', function(msg) {
 		var data = $.parseJSON(msg.data);
+        $('.init-entry').remove();
 		displayInitOrder(data['initorder'], data['round'], data['initposition']);
 	});
 	
